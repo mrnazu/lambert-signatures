@@ -26,7 +26,7 @@ function genPublicKey(filename) {
   const privateKey = JSON.parse(privateKeyData);
 
   const publicKey = [];
-  for (const pair of privateKey) {  // Fix here: Use 'pair' (each entry in privateKey)
+  for (const pair of privateKey) { 
     const hash1 = crypto.createHash('sha256').update(pair[0].toString()).digest('hex');
     const hash2 = crypto.createHash('sha256').update(pair[1].toString()).digest('hex');
     publicKey.push([hash1, hash2]);
