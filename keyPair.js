@@ -27,8 +27,9 @@ function genPublicKey(filename) {
 
   const publicKey = [];
   for (const number of privateKey) {
-    const hash = crypto.createHash('sha256').update(number.toString()).digest('hex');
-    publicKey.push(hash);
+    const hash1 = crypto.createHash('sha256').update(pair[0].toString()).digest('hex');
+    const hash2 = crypto.createHash('sha256').update(pair[1].toString()).digest('hex');
+    publicKey.push([hash1, hash2]);
   }
 
   return publicKey;
@@ -36,3 +37,20 @@ function genPublicKey(filename) {
 
 const publicKey = genPublicKey('random_pairs.json');
 console.log(publicKey);
+
+function sign(message, privateKeyFile) {
+  const privateKeyData = fs.readFileSync(privateKeyFile, 'utf8');
+  const privateKey = JSON.parse(privateKeyData);
+  
+  const messageBinary = Buffer.from(message).toString('binary');
+  const signature = [];
+
+  for (let i = 0; i < messageBinary.length; i++) {
+    const bit = messageBinary.charCodeAt(i) === 48 ? 0 : 1; // '0' => 0, '1' => 1
+    const pair = privateKey[i];
+    const selected = pair[bit];
+    signature.push(selected);
+  }
+
+  return signature;
+}
