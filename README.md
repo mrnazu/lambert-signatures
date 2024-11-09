@@ -6,3 +6,5 @@ In this problem set, I will build a hash-based signature system: https://en.wiki
 Implement the `genRandomNum()`, `genPublicKey()` functions in nodejs. `sign()` and `verify()` functions as well.
 
 Hint: I will need to look at the bits in each byte in a hash. I can use bit operators in order to do so.
+
+https://mrnazu.medium.com/lamport-signature-with-hash-based-signature-schemes-problem-set-11c09aa1e740
