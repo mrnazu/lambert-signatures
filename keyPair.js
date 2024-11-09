@@ -1,4 +1,7 @@
 const fs = require('fs');
+const crypto = require('crypto');
+
+// private key
 
 function genRandomNum(filename, numPairs) {
   const pairs = [];
@@ -13,3 +16,20 @@ function genRandomNum(filename, numPairs) {
 }
 
 genRandomNum('random_pairs.json', 256);
+
+// public key
+function genPublicKey(filename) {
+  const privateKeyData = fs.readFileSync(filename, 'utf8');
+  const privateKey = JSON.parse(privateKeyData);
+
+  const publicKey = [];
+  for (const number of privateKey) {
+    const hash = crypto.createHash('sha256').update(number.toString()).digest('hex');
+    publicKey.push(hash);
+  }
+
+  return publicKey;
+}
+
+const publicKey = genPublicKey('random_pairs.json');
+console.log(publicKey);
