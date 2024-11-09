@@ -20,13 +20,13 @@ function genRandomNum(filename, numPairs) {
 genRandomNum('random_pairs.json', 256);
 
 // public key
-// for the public key, we're gonna hash out each numbers
+// for the public key, we're gonna hash out each number
 function genPublicKey(filename) {
   const privateKeyData = fs.readFileSync(filename, 'utf8');
   const privateKey = JSON.parse(privateKeyData);
 
   const publicKey = [];
-  for (const number of privateKey) {
+  for (const pair of privateKey) {  // Fix here: Use 'pair' (each entry in privateKey)
     const hash1 = crypto.createHash('sha256').update(pair[0].toString()).digest('hex');
     const hash2 = crypto.createHash('sha256').update(pair[1].toString()).digest('hex');
     publicKey.push([hash1, hash2]);
@@ -36,7 +36,7 @@ function genPublicKey(filename) {
 }
 
 const publicKey = genPublicKey('random_pairs.json');
-console.log(publicKey);
+console.log('Public Key:', publicKey);
 
 function sign(message, privateKeyFile) {
   const privateKeyData = fs.readFileSync(privateKeyFile, 'utf8');
@@ -54,3 +54,26 @@ function sign(message, privateKeyFile) {
 
   return signature;
 }
+
+function verify(message, signature, publicKey) {
+  const messageBinary = Buffer.from(message).toString('binary');
+
+  for (let i = 0; i < messageBinary.length; i++) {
+    const bit = messageBinary.charCodeAt(i) === 48 ? 0 : 1;
+    const pair = publicKey[i];
+
+    const signatureHash = crypto.createHash('sha256').update(signature[i].toString()).digest('hex');
+    if (signatureHash !== pair[bit]) {
+      return false; 
+    }
+  }
+  return true;
+}
+
+const message = "Hello, Lamport! This is Sammy :)";
+
+const signature = sign(message, 'random_pairs.json');
+console.log('Signature:', signature);
+
+const isValid = verify(message, signature, publicKey);
+console.log(`Signature valid: ${isValid}`);
